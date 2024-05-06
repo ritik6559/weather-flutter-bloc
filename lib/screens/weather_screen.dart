@@ -19,7 +19,6 @@ class WeatherScreen extends StatelessWidget {
           IconButton(
             //gesture control doesn't give splash effect so to avoid this we use INKwELL to get advantage of both we use iconbutton
             onPressed: () {
-              print("refrsh");
             },
             icon: const Icon(
               Icons.refresh,

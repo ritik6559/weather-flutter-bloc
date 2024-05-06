@@ -27,14 +27,14 @@ class AdditonalInfpItem extends StatelessWidget {
           ),
           Text(
             label,
-            style: TextStyle(fontSize: 16),
+            style:const TextStyle(fontSize: 16),
           ),
           const SizedBox(
             height: 10,
           ),
           Text(
             value,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
           )
         ],
       ),
