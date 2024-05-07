@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData.dark(useMaterial3: true),
       debugShowCheckedModeBanner: false,
-      home: const WeatherScreen(),
+      home: const WeatherScreen(city: "Mumbai",),
     );
   }
 }

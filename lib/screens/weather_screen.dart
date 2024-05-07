@@ -3,12 +3,17 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:weatherapp/components/constants.dart';
+import 'package:weatherapp/screens/search_screen.dart';
 import '../components/weather_screen_items.dart';
 import '../components/additional_info_item.dart';
 import 'package:http/http.dart' as http;
 
 class WeatherScreen extends StatefulWidget {
-  const WeatherScreen({super.key});
+  final String city;
+  const WeatherScreen({
+    super.key,
+    required this.city,
+  });
 
   @override
   State<WeatherScreen> createState() => _WeatherScreenState();
@@ -16,13 +21,11 @@ class WeatherScreen extends StatefulWidget {
 
 class _WeatherScreenState extends State<WeatherScreen> {
   late Future<Map<String, dynamic>> weather;
-
   Future<Map<String, dynamic>> getCurrentWeather() async {
     try {
-      String cityName = 'London';
       final res = await http.get(
         Uri.parse(
-          'https://api.openweathermap.org/data/2.5/forecast?q=$cityName&APPID=$openWeatherAPIKey',
+          'https://api.openweathermap.org/data/2.5/forecast?q=${widget.city}&APPID=$openWeatherAPIKey',
         ),
       );
 
@@ -58,7 +61,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
             //gesture control doesn't give splash effect so to avoid this we use INKwELL to get advantage of both we use iconbutton
             onPressed: () {
               setState(() {
-                weather = getCurrentWeather(); //to get a reloading effect we are using set state and initailizing weather with every click.
+                weather =
+                    getCurrentWeather(); //to get a reloading effect we are using set state and initailizing weather with every click.
               });
             },
             icon: const Icon(
@@ -98,6 +102,34 @@ class _WeatherScreenState extends State<WeatherScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                SizedBox(
+                  width: double.infinity,
+                  height: 40,
+                  child: Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => const SearchScreen()));
+                      },
+                      child: Container(
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: Colors.white, width: 2),
+                        ),
+                        child: Text(
+                          widget.city,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 18),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(
+                  height: 20,
+                ),
                 Card(
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20)),
@@ -184,8 +216,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
                       final hourlySky =
                           data['list'][index + 1]['weather'][0]['main'];
 
-                      final time = DateTime.parse(
-                          hourlyForeCast['dt_txt']); //we have to import intl package.
+                      final time = DateTime.parse(hourlyForeCast[
+                          'dt_txt']); //we have to import intl package.
 
                       return HourlyForeCastItem(
                           icon: hourlySky == 'Clouds' || hourlySky == 'Rain'
