@@ -185,7 +185,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                           data['list'][index + 1]['weather'][0]['main'];
 
                       final time = DateTime.parse(
-                          hourlyForeCast['dt_txt']); // to import intl package.
+                          hourlyForeCast['dt_txt']); //we have to import intl package.
 
                       return HourlyForeCastItem(
                           icon: hourlySky == 'Clouds' || hourlySky == 'Rain'
