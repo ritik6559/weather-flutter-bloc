@@ -31,25 +31,26 @@ class _SearchScreenState extends State<SearchScreen> {
           controller: _keyBoardContoller,
           autocorrect: true,
           decoration: InputDecoration(
-              enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(20),
-                  borderSide: const BorderSide(
-                    width: 2,
-                    color: Colors.white,
-                  )),
-              focusedBorder: OutlineInputBorder(
+            enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(20),
-                borderSide: const BorderSide(color: Colors.white, width: 3),
-              ),
-              label: const Text('Search....'),
-              suffixIcon: IconButton(
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) =>
-                          WeatherScreen(city: _keyBoardContoller.text)));
-                },
-                icon: const Icon(Icons.search),
-              )),
+                borderSide: const BorderSide(
+                  width: 2,
+                  color: Colors.white,
+                )),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),
+              borderSide: const BorderSide(color: Colors.white, width: 3),
+            ),
+            label: const Text('Search....'),
+            suffixIcon: IconButton(
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) =>
+                        WeatherScreen(city: _keyBoardContoller.text)));
+              },
+              icon: const Icon(Icons.search),
+            ),
+          ),
         ),
       ),
     );
