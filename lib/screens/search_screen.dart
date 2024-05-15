@@ -44,7 +44,7 @@ class _SearchScreenState extends State<SearchScreen> {
             label: const Text('Search....'),
             suffixIcon: IconButton(
               onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
                     builder: (context) =>
                         WeatherScreen(city: _keyBoardContoller.text)));
               },
