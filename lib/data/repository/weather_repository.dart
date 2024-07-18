@@ -1,13 +1,14 @@
 import 'dart:convert';
 
 import 'package:weatherapp/data/data_provider/weather_data_provider.dart';
+import 'package:weatherapp/models/weather_model.dart';
 
 class WeatherRepository {
   final WeatherDataProvider weatherDataProvider;
   WeatherRepository({
     required this.weatherDataProvider,
   });
-  Future<Map<String, dynamic>> getCurrentWeather() async {
+  Future<WeatherModel> getCurrentWeather() async {
     try {
       String cityName = 'London';
 
@@ -19,7 +20,7 @@ class WeatherRepository {
         throw 'An unexpected error occurred';
       }
 
-      return data;
+      return WeatherModel.fromMap(data);
     } catch (e) {
       throw e.toString();
     }
