@@ -2,17 +2,14 @@ import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:weatherapp/components/constants.dart';
-import 'package:weatherapp/screens/search_screen.dart';
-import '../components/weather_screen_items.dart';
-import '../components/additional_info_item.dart';
+import 'package:weatherapp/core/constants.dart';
+import '../widgets/weather_screen_items.dart';
+import '../widgets/additional_info_item.dart';
 import 'package:http/http.dart' as http;
 
 class WeatherScreen extends StatefulWidget {
-  final String city;
   const WeatherScreen({
     super.key,
-    required this.city,
   });
 
   @override
@@ -25,7 +22,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
     try {
       final res = await http.get(
         Uri.parse(
-          'https://api.openweathermap.org/data/2.5/forecast?q=${widget.city}&APPID=$openWeatherAPIKey',
+          'https://api.openweathermap.org/data/2.5/forecast?q=Mumbai&APPID=$openWeatherAPIKey',
         ),
       );
 
@@ -107,22 +104,16 @@ class _WeatherScreenState extends State<WeatherScreen> {
                     width: double.infinity,
                     height: 40,
                     child: Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => const SearchScreen()));
-                        },
-                        child: Container(
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: Colors.white, width: 2),
-                          ),
-                          child: Text(
-                            widget.city,
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 18),
-                          ),
+                      child: Container(
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: Colors.white, width: 2),
+                        ),
+                        child: const Text(
+                          "Mumbai",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 18),
                         ),
                       ),
                     ),
@@ -191,19 +182,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                   const SizedBox(
                     height: 20,
                   ),
-                  // SingleChildScrollView(
-                  //   scrollDirection: Axis.horizontal,
-                  //   child: Row(
-                  //     children: [
-                  //       for (int i = 1; i <= 5;i++)//now we are making 5 data but if we want to make 40 widgets it wouls be a problem because then all widgets will load at the same time but we want to load them when we are scrolling so for this we will listview.builder.
-                  //         HourlyForeCastItem(// we dont need brackets for for loop in flutter to represent more values we use ...[content].
-                  //           icon: data['list'][i]['weather'][0]['main'] == 'Clouds' || data['list'][i]['weather'][0]['main'] == 'Rain'? Icons.cloud:Icons.sunny,
-                  //           time: data['list'][i]['dt'].toString(),
-                  //           temperature: data['list'][i]['main']['temp'].toString() ,
-                  //         ),
-                  //     ],
-                  //   ),
-                  // ),
+                  
             
                   SizedBox(
                     height: 155,
