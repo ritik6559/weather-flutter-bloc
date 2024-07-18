@@ -1,11 +1,8 @@
-import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:weatherapp/core/constants.dart';
-import '../widgets/weather_screen_items.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:weatherapp/bloc/weather_bloc.dart';
 import '../widgets/additional_info_item.dart';
-import 'package:http/http.dart' as http;
 
 class WeatherScreen extends StatefulWidget {
   const WeatherScreen({
@@ -17,31 +14,10 @@ class WeatherScreen extends StatefulWidget {
 }
 
 class _WeatherScreenState extends State<WeatherScreen> {
-  late Future<Map<String, dynamic>> weather;
-  Future<Map<String, dynamic>> getCurrentWeather() async {
-    try {
-      final res = await http.get(
-        Uri.parse(
-          'https://api.openweathermap.org/data/2.5/forecast?q=Mumbai&APPID=$openWeatherAPIKey',
-        ),
-      );
-
-      final data = jsonDecode(res.body);
-
-      if (data['cod'] != '200') {
-        throw 'An unexpected error occurred';
-      }
-
-      return data;
-    } catch (e) {
-      throw e.toString();
-    }
-  }
-
   @override
   void initState() {
     super.initState();
-    weather = getCurrentWeather();
+    context.read<WeatherBloc>().add(WeatherFetched());
   }
 
   @override
@@ -57,10 +33,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
           IconButton(
             //gesture control doesn't give splash effect so to avoid this we use INKwELL to get advantage of both we use iconbutton
             onPressed: () {
-              setState(() {
-                weather =
-                    getCurrentWeather(); //to get a reloading effect we are using set state and initailizing weather with every click.
-              });
+              setState(() {});
             },
             icon: const Icon(
               Icons.refresh,
@@ -68,31 +41,28 @@ class _WeatherScreenState extends State<WeatherScreen> {
           ),
         ],
       ),
-      body: FutureBuilder(
-        future:
-            weather, //insted of passing  getweather()firectly what flutter suggest is to pass a variable folsing that function value.
-        builder: (context, snapshot) {
-          //snapshot is used to handle state is your app like loading state, data state, error state.
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-                child: CircularProgressIndicator
-                    .adaptive()); //with adaptive it will give acc to OS.
-          }
+      body: BlocBuilder<WeatherBloc, WeatherState>(
+        builder: (context, state) {
 
-          if (snapshot.hasError) {
+          if (state is WeatherFailure) {
             return Center(
-                child: Text(
-                    snapshot.error.toString())); //to print the error on screen.
+              child: Text(state.error),
+            );
           }
 
-          final data = snapshot.data!;
+          if (state is! WeatherSuccess) {
+            return const Center(
+              child: CircularProgressIndicator.adaptive(),
+            );
+          }
 
-          final currentData = data['list'][0];
-          final currentTemperature = currentData['main']['temp'];
-          final currentSky = currentData['weather'][0]['main'];
-          final currentHumidity = currentData['main']['humidity'].toString();
-          final currentSpeed = currentData['wind']['speed'].toString();
-          final currentPressure = currentData['main']['pressure'].toString();
+          final data = state.weatherModel;
+
+          final currentTemperature = data.currentTemp;
+          final currentSky = data.currentSky;
+          final currentHumidity = data.currentHumidity;
+          final currentSpeed = data.currentWindSpeed;
+          final currentPressure = data.currentPressure;
 
           return SingleChildScrollView(
             child: Padding(
@@ -118,7 +88,6 @@ class _WeatherScreenState extends State<WeatherScreen> {
                       ),
                     ),
                   ),
-            
                   const SizedBox(
                     height: 20,
                   ),
@@ -149,7 +118,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                     height: 20,
                                   ),
                                   Icon(
-                                    currentSky == 'Clouds' || currentSky == 'Rain'
+                                    currentSky == 'Clouds' ||
+                                            currentSky == 'Rain'
                                         ? Icons.cloud
                                         : Icons.sunny,
                                     size: 62,
@@ -158,7 +128,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                     height: 20,
                                   ),
                                   Text(
-                                    '$currentSky',
+                                    currentSky,
                                     style: const TextStyle(fontSize: 25),
                                   )
                                 ],
@@ -182,33 +152,31 @@ class _WeatherScreenState extends State<WeatherScreen> {
                   const SizedBox(
                     height: 20,
                   ),
-                  
-            
-                  SizedBox(
-                    height: 155,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: 39,
-                      itemBuilder: (context, index) {
-                        //beacause index starts from 0 therefore index +1;
-                        final hourlyForeCast = data['list'][index + 1];
-            
-                        final hourlySky =
-                            data['list'][index + 1]['weather'][0]['main'];
-            
-                        final time = DateTime.parse(hourlyForeCast[
-                            'dt_txt']); //we have to import intl package.
-            
-                        return HourlyForeCastItem(
-                            icon: hourlySky == 'Clouds' || hourlySky == 'Rain'
-                                ? Icons.cloud
-                                : Icons.sunny,
-                            temperature:
-                                hourlyForeCast['main']['temp'].toString(),
-                            time: DateFormat.j().format(time));
-                      },
-                    ),
-                  ),
+                  // SizedBox(
+                  //   height: 155,
+                  //   child: ListView.builder(
+                  //     scrollDirection: Axis.horizontal,
+                  //     itemCount: 39,
+                  //     itemBuilder: (context, index) {
+                  //       //beacause index starts from 0 therefore index +1;
+                  //       final hourlyForeCast = data['list'][index + 1];
+
+                  //       final hourlySky =
+                  //           data['list'][index + 1]['weather'][0]['main'];
+
+                  //       final time = DateTime.parse(hourlyForeCast[
+                  //           'dt_txt']); //we have to import intl package.
+
+                  //       return HourlyForeCastItem(
+                  //           icon: hourlySky == 'Clouds' || hourlySky == 'Rain'
+                  //               ? Icons.cloud
+                  //               : Icons.sunny,
+                  //           temperature:
+                  //               hourlyForeCast['main']['temp'].toString(),
+                  //           time: DateFormat.j().format(time));
+                  //     },
+                  //   ),
+                  // ),
                   const SizedBox(
                     height: 20,
                   ),
@@ -228,16 +196,16 @@ class _WeatherScreenState extends State<WeatherScreen> {
                       AdditonalInfpItem(
                         icon: Icons.water_drop,
                         label: 'Humidity',
-                        value: currentHumidity,
+                        value: currentHumidity.toString(),
                       ),
                       AdditonalInfpItem(
                         icon: Icons.air,
                         label: 'Wind Speed',
-                        value: currentSpeed,
+                        value: currentSpeed.toString(),
                       ),
                       AdditonalInfpItem(
                         icon: Icons.beach_access,
-                        value: currentPressure,
+                        value: currentPressure.toString(),
                         label: 'Pressure',
                       ),
                     ],
