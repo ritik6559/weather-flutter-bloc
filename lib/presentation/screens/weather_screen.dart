@@ -33,7 +33,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
           IconButton(
             //gesture control doesn't give splash effect so to avoid this we use INKwELL to get advantage of both we use iconbutton
             onPressed: () {
-              setState(() {});
+              context.read<WeatherBloc>().add(WeatherFetched());
             },
             icon: const Icon(
               Icons.refresh,
